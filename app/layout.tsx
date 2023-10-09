@@ -5,6 +5,7 @@ import { clsx } from "clsx";
 import ThemeProviders from "../src/theme/ThemeProvider";
 import Header from "@/src/feature/layout/Header";
 import Footer from "@/src/feature/layout/Footer";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,6 +30,7 @@ export default function RootLayout({
             </div>
             <Footer />
           </div>
+          <Toaster />
         </ThemeProviders>
       </body>
     </html>

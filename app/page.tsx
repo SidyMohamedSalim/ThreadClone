@@ -1,9 +1,5 @@
-import { Skeleton } from "@/components/ui/skeleton";
-
-export default function Home() {
-  return (
-    <div className="m-4">
-      <Skeleton />
-    </div>
-  );
+import { getAuthSession } from "../lib/authOptions";
+export default async function Home() {
+  const session = await getAuthSession();
+  return <div>{JSON.stringify(session, null, 2)}</div>;
 }

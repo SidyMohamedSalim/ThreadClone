@@ -16,7 +16,7 @@ model Account {
   id                 String    @id @default(cuid())
   userId             String
   providerType       String
-  providerId         String
+  provider           String
   providerAccountId  String
   refreshToken       String?
   accessToken        String?
@@ -25,7 +25,9 @@ model Account {
   updatedAt          DateTime  @updatedAt
   user               User      @relation(fields: [userId], references: [id])
 
-  @@unique([providerId, providerAccountId])
+  refresh_token_expires_in Float
+
+  @@unique([provider, providerAccountId])
 }
 
 model Session {
@@ -53,14 +55,61 @@ model VerificationRequest {
 // application
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  password      String?
+  id       String  @id @default(cuid())
+  name     String?
+  email    String? @unique
+  password String?
+
+  username String?
+  link     String?
+  bio      String?
+
   emailVerified DateTime?
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  accounts      Account[]
-  sessions      Session[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accounts  Account[]
+  sessions  Session[]
+  followers Follow[]  @relation(name: "follower")
+  followeds Follow[]  @relation(name: "followed")
+  posts     Post[]
+  likes     Like[]
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  content   String
+  parentId  String?
+  usetId    String
+  createdAt DateTime @default(now())
+
+  user    User   @relation(fields: [usetId], references: [id], onDelete: Cascade)
+  replies Post[] @relation("comments")
+  parent  Post?  @relation(name: "comments", fields: [parentId], references: [id])
+  likes   Like[]
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  createdAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower User @relation(fields: [followerId], references: [id], onDelete: Cascade, name: "follower")
+
+  followed User @relation(fields: [followingId], references: [id], onDelete: Cascade, name: "followed")
 }

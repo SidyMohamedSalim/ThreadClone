@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -17,12 +17,13 @@ import { Input } from "@/components/ui/input";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "@/components/ui/use-toast";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { clsx } from "clsx";
 import { Separator } from "@/components/ui/separator";
 import { Github } from "lucide-react";
+import { Loader } from "@/components/ui/loader";
 
 const formScheme = z.object({
   name: z.string().optional(),
@@ -37,6 +38,8 @@ type formSchemeType = z.infer<typeof formScheme>;
 
 const FormRegister = ({ type }: { type: "login" | "register" }) => {
   const router = useRouter();
+
+  const [loadLogin, setLoadLogin] = useState(false);
   const form = useForm<formSchemeType>({
     resolver: zodResolver(formScheme),
     defaultValues: {
@@ -58,48 +61,34 @@ const FormRegister = ({ type }: { type: "login" | "register" }) => {
       router.push("/auth/login");
       toast({
         title: "User Added",
+        className: "text-green-500",
       });
     },
     onError: () => {
       toast({
-        title: "error",
-      });
-    },
-  });
-
-  const { mutate: login, isLoading: loginLoding } = useMutation({
-    mutationFn: (values: formSchemeType) => {
-      return signIn("credentials", {
-        redirect: false,
-        email: values.email,
-        password: values.password,
-      });
-    },
-    onSuccess: () => {
-      router.push("/");
-      toast({ title: "succes login" });
-    },
-    onError: () => {
-      toast({
-        title: "error",
+        title: "error try again please",
+        className: "text-red-500",
       });
     },
   });
 
   function onSubmit(values: formSchemeType) {
     if (type === "login") {
+      setLoadLogin(true);
       signIn("credentials", {
         redirect: false,
         email: values.email,
         password: values.password,
         // @ts-ignore
       }).then(({ error }) => {
+        setLoadLogin(false);
         if (error) {
           toast({
-            title: "error",
+            title: "donnees invalid",
+            className: "text-red-500",
           });
         } else {
-          toast({ title: "succes login" });
+          toast({ title: "connexion reussi", className: "text-green-500" });
           setTimeout(() => {
             router.refresh();
             router.push("/");
@@ -186,12 +175,18 @@ const FormRegister = ({ type }: { type: "login" | "register" }) => {
               </>
             )}
           </p>
-          <Button disabled={isLoading || loginLoding} type="submit">
-            {isLoading || loginLoding
-              ? "loading..."
-              : type === "login"
-              ? "login"
-              : "register"}
+          <Button
+            className="flex justify-center"
+            disabled={isLoading || loadLogin}
+            type="submit"
+          >
+            {isLoading || loadLogin ? (
+              <Loader className=" h-4 w-4" size={20} />
+            ) : type === "login" ? (
+              "login"
+            ) : (
+              "register"
+            )}
           </Button>
         </form>
       </Form>

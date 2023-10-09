@@ -1,4 +1,4 @@
-import { AuthOptions } from "next-auth";
+import { AuthOptions, getServerSession } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { env } from "./env";
@@ -12,6 +12,17 @@ export const authOptions: AuthOptions = {
     GithubProvider({
       clientId: env.GITHUB_ID,
       clientSecret: env.GITHUB_SECRET,
+      profile(profile, tokens) {
+        console.log(profile);
+
+        return {
+          id: profile.id.toString(),
+          username: profile.login,
+          name: profile.name,
+          email: profile.email,
+          image: profile.avatar_url,
+        };
+      },
     }),
     CredentialsProvider({
       name: "",
@@ -40,4 +51,18 @@ export const authOptions: AuthOptions = {
       },
     }),
   ],
+  callbacks: {
+    session({ session, user }) {
+      if (!session.user) {
+        return session;
+      }
+      session.user.id = user.id;
+      return session;
+    },
+  },
+};
+
+export const getAuthSession = async () => {
+  const session = await getServerSession();
+  return session;
 };
