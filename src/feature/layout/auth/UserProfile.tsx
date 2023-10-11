@@ -16,7 +16,7 @@ const UserProfile = async () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant={"outline"} size="sm">
+        <Button variant={"link"} size="sm">
           {session?.user.name ?? ""}
         </Button>
       </DropdownMenuTrigger>
