@@ -25,16 +25,13 @@ const PostLayout = ({
         {user.image ? (
           <AvatarImage src={user.image} alt={user.username ?? ""} />
         ) : null}
-        <AvatarFallback>
-          {user?.username?.slice(0, 2).toUpperCase()}
-        </AvatarFallback>
+        <AvatarFallback>{user?.name?.slice(0, 2).toUpperCase()}</AvatarFallback>
       </Avatar>
       <div className="ml-4  flex w-full flex-col gap-2">
-        <Link href={`/users/${user.id}}`}>
-          {" "}
+        <Link href={`/user/${user.id}}`}>
           <div className="flex flex-row items-center gap-2">
-            <p className="text-sm text-card-foreground mr-auto">
-              {user.username}
+            <p className="text-sm text-card-foreground mr-auto font-bold">
+              {user.name}
             </p>
             {createdAt ? (
               <p className="text-sm text-muted-foreground">

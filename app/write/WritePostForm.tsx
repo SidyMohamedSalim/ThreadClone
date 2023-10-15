@@ -35,9 +35,10 @@ const WritePostForm = ({ user, onSubmit }: WritePostFormProps) => {
       <Form
         form={form}
         onSubmit={async (values) => {
-          const res = await onSubmit(values);
-          console.log("submit de client side", res);
-          // router.push("/");
+          const postId = await onSubmit(values);
+          console.log("submit de client side", postId);
+          router.push(`/posts/${postId}`);
+          router.refresh();
         }}
       >
         <FormField

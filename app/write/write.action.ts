@@ -12,5 +12,5 @@ export const createPost = async (values: WritePostFormValues) => {
       usetId: user.id,
     },
   });
-  return post;
+  return post.id;
 };

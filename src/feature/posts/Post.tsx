@@ -1,9 +1,10 @@
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Heart, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { PostHomeType } from "../../query/post.query";
 import PostLayout from "./PostLayout";
+import clsx from "clsx";
 
 type PostProps = {
   post: PostHomeType;
@@ -19,9 +20,15 @@ const Post = ({ post }: PostProps) => {
         <Button size={"icon"} variant="ghost">
           <Heart size={20} />
         </Button>
-        <Button size={"icon"} variant="ghost">
+        <Link
+          href={`/posts/${post.id}/reply`}
+          className={buttonVariants({
+            size: "icon",
+            variant: "ghost",
+          })}
+        >
           <MessageCircle size={20} />
-        </Button>
+        </Link>
       </div>
       <div>
         <Link
